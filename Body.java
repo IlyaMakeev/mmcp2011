@@ -1,13 +1,13 @@
-package Kepler;
+package makeev.mmcp;
 
 import java.util.ArrayList;
 
-public class Body implements Cloneable {
+public class Body{
 	double mass;
 	Velocity v;
 	Point p;
 	Force f;
-	static final double G = 6.6725 * Math.pow(0.1, 11);
+	static final double G = 1;
 
 	public Body(double mass, Point p, Velocity v, Force f) {
 		this.mass = mass;
@@ -32,14 +32,9 @@ public class Body implements Cloneable {
 		this.p = x;
 	}
 
-	static boolean equals(Body b1, Body b2) {
-		return (b1.p.x == b2.p.x) && (b1.p.y == b2.p.y) && (b1.p.z == b2.p.z);
-	}
-
 	static double dist(Body b1, Body b2) {
 		return Math.sqrt((b1.p.x - b2.p.x) * (b1.p.x - b2.p.x)
-				+ (b1.p.y - b2.p.y) * (b1.p.y - b2.p.y) + (b1.p.z - b2.p.z)
-				* (b1.p.z - b2.p.z));
+				+ (b1.p.y - b2.p.y) * (b1.p.y - b2.p.y) + (b1.p.z - b2.p.z)	* (b1.p.z - b2.p.z));
 	}
 
 	static double potentialEnergy(Body b1, Body b2) {
@@ -55,14 +50,12 @@ public class Body implements Cloneable {
 	static Force force(Body b1, Body b2) {
 		double rx = b1.p.x - b2.p.x;
 		double ry = b1.p.y - b2.p.y;
-		double rz = b1.p.z - b2.p.z;
-
+		double rz = b1.p.z - b2.p.z;		
+		
 		double k = 1;
-
 		double dist = dist(b1, b2);
-		double eps = 1;
-		if (dist < eps) {
-			// dist += eps;
+		double eps = 0.1;
+		if (dist < eps) {			
 			k = 0;
 		}
 
@@ -71,33 +64,17 @@ public class Body implements Cloneable {
 		return new Force(f * rx, f * ry, f * rz);
 	}
 
-	static Force forces(Body b1, ArrayList<Body> bodySet, int n) {
+	static Force forces(Body b, ArrayList<Body> bodySet, int n) {
 		Force f = new Force(0, 0, 0);
 
 		for (int i = 0; i < bodySet.size(); i++) {
 			if (i != n) {
-				Force f1 = force(b1, bodySet.get(i));
-				f = Force.sum(f, f1);
+					Force f1 = force(b, bodySet.get(i));
+					f = Force.sum(f, f1);
 			}
 		}
-
+		
 		return f;
-	}
-
-	public Object clone() {
-		Body newObject = null;
-		try {
-			newObject = (Body) super.clone();
-			newObject.v = (Velocity) this.v.clone();
-			newObject.p = (Point) this.p.clone();
-			newObject.f = (Force) this.f.clone();
-
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return newObject;
 	}
 
 }
